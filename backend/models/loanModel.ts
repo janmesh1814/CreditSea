@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const loanSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String },
   amount: { type: Number, required: true },
   tenure: { type: Number, required: true },
   employmentStatus: { type: String, required: true },
@@ -20,6 +20,8 @@ const loanSchema = new mongoose.Schema({
     enum: ["Pending", "Partially Paid", "Paid"],
     default: "Pending",
   },
+  termsAccepted: { type: Boolean, default: false },
+  disclosureAccepted: { type: Boolean, default: false },
 });
 
 export default mongoose.model("Loan", loanSchema);

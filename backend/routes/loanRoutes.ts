@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 router.post("/apply", applyLoan);
+router.post("/:id/depositLoan", depositLoan);
 router.get("/", getAllLoans);
 router.get("/stats", getLoanStats);
-router.post("/:id/depositLoan", depositLoan);
 
 export default router;

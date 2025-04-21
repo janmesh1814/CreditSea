@@ -3,8 +3,28 @@ import Loan from "../models/loanModel";
 
 export const applyLoan = async (req: Request, res: Response) => {
   try {
-    const body = req.body;
-    const newLoan = await Loan.create(body);
+    const {
+      name,
+      amount,
+      tenure,
+      employmentStatus,
+      loanReason,
+      address,
+      termsAccepted,
+      disclosureAccepted,
+    } = req.body;
+
+    const newLoan = await Loan.create({
+      name,
+      amount,
+      tenure,
+      employmentStatus,
+      loanReason,
+      address,
+      termsAccepted,
+      disclosureAccepted,
+    });
+
     res.status(201).json(newLoan);
   } catch (error) {
     res.status(400).json({ error: "Failed to create Loan" });
@@ -44,7 +64,7 @@ export const getLoanStats = async (req: Request, res: Response) => {
       cashDisbursed: cashDisbursed[0]?.total || 0,
       cashReceived: cashReceived[0]?.total || 0,
       repaidLoans,
-      savings: cashReceived[0]?.total - cashDisbursed[0]?.total,
+      savings: (cashReceived[0]?.total || 0) - (cashDisbursed[0]?.total || 0),
     };
 
     res.status(200).json(stats);
@@ -57,9 +77,11 @@ export const depositLoan = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const loan = await Loan.findById(id);
+
     if (loan) {
-      const depositAmount = req.body.depositAmount;
-      loan.depositAmount = (loan.depositAmount || 0) + depositAmount;
+      const { depositAmount } = req.body;
+      loan.depositAmount += depositAmount;
+
       if (loan.depositAmount >= loan.amount) {
         loan.repaymentStatus = "Paid";
       } else if (loan.depositAmount > 0) {
@@ -71,7 +93,7 @@ export const depositLoan = async (req: Request, res: Response) => {
       await loan.save();
       res.status(200).json({ message: "Deposit successful", loan });
     } else {
-      console.log("Loan not found");
+      res.status(404).json({ error: "Loan not found" });
     }
   } catch (error) {
     res.status(500).json({ error: "Failed to deposit amount" });
