@@ -3,10 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import bcrypt from "bcryptjs";
 
-export const registerUser = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export async function registerUser(req: Request, res: Response) {
   const { name, email, password, role } = req.body;
 
   const userExists = await User.findOne({ email });
@@ -42,9 +39,9 @@ export const registerUser = async (
       role: newUser.role,
     },
   });
-};
+}
 
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
+export async function loginUser(req: Request, res: Response) {
   const { email, password } = req.body;
   console.log("Login Request:", req.body);
 
@@ -81,4 +78,4 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       role: user.role,
     },
   });
-};
+}

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Loan from "../models/loanModel";
 
-export const applyLoan = async (req: Request, res: Response) => {
+export async function applyLoan(req: Request, res: Response): Promise<void> {
   try {
     const {
       name,
@@ -29,18 +29,18 @@ export const applyLoan = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).json({ error: "Failed to create Loan" });
   }
-};
+}
 
-export const getAllLoans = async (req: Request, res: Response) => {
+export async function getAllLoans(req: Request, res: Response) {
   try {
     const loans = await Loan.find();
     res.status(200).json(loans);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch loans" });
   }
-};
+}
 
-export const getLoanStats = async (req: Request, res: Response) => {
+export async function getLoanStats(req: Request, res: Response) {
   try {
     const [
       totalLoans,
@@ -50,7 +50,7 @@ export const getLoanStats = async (req: Request, res: Response) => {
       repaidLoans,
     ] = await Promise.all([
       Loan.countDocuments(),
-      Loan.distinct("email").then((emails) => emails.length),
+      Loan.distinct("name").then((names) => names.length),
       Loan.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]),
       Loan.aggregate([
         { $group: { _id: null, total: { $sum: "$depositAmount" } } },
@@ -71,9 +71,9 @@ export const getLoanStats = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch dashboard stats" });
   }
-};
+}
 
-export const depositLoan = async (req: Request, res: Response) => {
+export async function depositLoan(req: Request, res: Response) {
   try {
     const id = req.params.id;
     const loan = await Loan.findById(id);
@@ -98,4 +98,4 @@ export const depositLoan = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to deposit amount" });
   }
-};
+}
